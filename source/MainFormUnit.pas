@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Forms,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, SQLThreadUnit, SyncObjs,
   TeEngine, Series, TeeProcs, Chart, Controls, DB, ADODB, ADOInt, OLEDB,
-  ActiveX, ComObj, Menus, Character, DateUtils;
+  ActiveX, ComObj, Menus, Character, DateUtils, VclTee.TeeGDIPlus;
 
 type
   TThreadData = record
@@ -129,8 +129,8 @@ var
   Msg: string;
 begin
   Msg := 'SQL Stressing Tool'#13#10 +
-    'All rights reserved: Eduardo Gamboa ©2008-2010'#13#10 +
-    #9'eduardo.gamboa@hotmail.com'#13#10 + #13#10'Powered by Delphi 2010';
+    'All rights reserved: Eduardo Gamboa ©2008-2014'#13#10 +
+    #9'eduardo@bestrafender.com'#13#10 + #13#10'Powered by Delphi XE7 32-bit';
   Application.MessageBox(PChar(Msg), 'About...', MB_ICONINFORMATION);
 end;
 

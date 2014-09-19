@@ -265,15 +265,13 @@ object MainForm: TMainForm
     Align = alLeft
     BevelOuter = bvLowered
     TabOrder = 2
+    DefaultCanvas = 'TGDIPlusCanvas'
     ColorPaletteIndex = 15
     object Series1: TBarSeries
       BarPen.Color = clRed
       BarPen.SmallDots = True
-      Marks.Arrow.Visible = True
-      Marks.Callout.Brush.Color = clBlack
-      Marks.Callout.Arrow.Visible = True
-      Marks.Callout.Length = 8
       Marks.Visible = False
+      Marks.Callout.Length = 8
       Title = 'Tx Duration (ms)'
       XValues.Name = 'X'
       XValues.Order = loAscending

@@ -2,4 +2,4 @@
 Compiler Information
 ====================
 
-Delphi XE2
+Delphi XE7

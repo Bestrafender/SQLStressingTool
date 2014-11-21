@@ -93,11 +93,11 @@ type
     FErrorMessage: String;
     FHalted: Boolean;
     FCallStop: Boolean;
-    FMinPeriod: Integer;
-    FMaxPeriod: Integer;
+    FMinPeriod: integer;
+    FMaxPeriod: integer;
     procedure OnSQLThreadDone(Sender: TObject);
-    procedure SetMinPeriod(const Value: Integer);
-    procedure SetMaxPeriod(const Value: Integer);
+    procedure SetMinPeriod(const Value: integer);
+    procedure SetMaxPeriod(const Value: integer);
   public
     NumThreads: integer;
     ThreadCount: integer;
@@ -105,8 +105,8 @@ type
     PeriodValues: TThreadList;
     ThreadCriticalSection: TCriticalSection;
     ConnectionString: string;
-    property MinPeriod: Integer read FMinPeriod write SetMinPeriod;
-    property MaxPeriod: Integer read FMaxPeriod write SetMaxPeriod;
+    property MinPeriod: integer read FMinPeriod write SetMinPeriod;
+    property MaxPeriod: integer read FMaxPeriod write SetMaxPeriod;
   end;
 
 var
@@ -151,16 +151,16 @@ begin
   else
     ConnectionString := ConnectionString + 'Password=' + PasswordEdit.Text +
       ';Persist Security Info=True;User ID=' + UsernameEdit.Text + ';';
-  ConnectionString := ConnectionString + 'Data Source=' + ServerComboBox.Text +
-    ';';
+  ConnectionString := ConnectionString + 'Data Source=' +
+    ServerComboBox.Text + ';';
   DBConnection.ConnectionString := Self.ConnectionString;
   try
     try
       Screen.Cursor := crHourGlass;
       DBConnection.LoginPrompt := False;
       DBConnection.Open;
-      rs := DBConnection.ConnectionObject.OpenSchema
-        (adSchemaCatalogs, EmptyParam, EmptyParam);
+      rs := DBConnection.ConnectionObject.OpenSchema(adSchemaCatalogs,
+        EmptyParam, EmptyParam);
       DatabaseComboBox.Clear;
       while not rs.EOF do
       begin
@@ -262,12 +262,11 @@ begin
       exit;
     end;
     if (SQLParameters[i].Value <> '<Random>') and
-      (SQLParameters[i].DataType = ftInteger) and not TryStrToInt
-      (SQLParameters[i].Value, TempValue) then
+      (SQLParameters[i].DataType = ftInteger) and
+      not TryStrToInt(SQLParameters[i].Value, TempValue) then
     begin
-      Application.MessageBox
-        (PChar('The value defined for the parameter ''' + SQLParameters[i]
-            .Name + ''' is not valid.'), 'Parameters', MB_ICONHAND);
+      Application.MessageBox(PChar('The value defined for the parameter ''' +
+        SQLParameters[i].Name + ''' is not valid.'), 'Parameters', MB_ICONHAND);
       exit;
     end;
   end;
@@ -300,12 +299,12 @@ begin
   for i := 0 to NumThreads - 1 do
   begin
     Threads[i] := TSQLThread.Create(i, ConnectionString, Command.Text,
-      SQLParameters); {Thread is created suspended}
+      SQLParameters); { Thread is created suspended }
     Threads[i].OnTerminate := OnSQLThreadDone;
   end;
   for i := 0 to NumThreads - 1 do
   begin
-    Threads[i].Start; {Start thread}
+    Threads[i].Start; { Start thread }
   end;
   StatusBar1.Panels[1].Text := 'Start: ' + TimeToStr(Now);
   StopButton.Enabled := True;
@@ -340,8 +339,8 @@ begin
   ThreadCriticalSection.Acquire;
   if ThreadCount > 0 then
   begin
-    Application.MessageBox(
-      'Application cannot exit because there are threads still running.',
+    Application.MessageBox
+      ('Application cannot exit because there are threads still running.',
       'Exit', MB_ICONINFORMATION);
     CanClose := False;
   end;
@@ -352,6 +351,10 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   StartDateTime: TDateTime;
 begin
+{$IFDEF Win64}
+  MainForm.Caption := 'SQL Stressing Tool - x64';
+{$ENDIF}
+
   ThreadCount := 0;
   PeriodValues := TThreadList.Create;
   Histogram.Series[0].Clear;
@@ -374,9 +377,10 @@ begin
   Command.Text := '';
   ParamListView.Items.Clear;
   StartDateTime := Now;
-  LogFileName := Format('%4d%.2d%.2d%.2d%.2d%.2d', [YearOf(StartDateTime),
-    MonthOf(StartDateTime), DayOf(StartDateTime), HourOf(StartDateTime),
-    MinuteOf(StartDateTime), SecondOf(StartDateTime)]) + '_Log.csv';
+  LogFileName := Format('%4d%.2d%.2d%.2d%.2d%.2d',
+    [YearOf(StartDateTime), MonthOf(StartDateTime), DayOf(StartDateTime),
+    HourOf(StartDateTime), MinuteOf(StartDateTime), SecondOf(StartDateTime)]) +
+    '_Log.csv';
   Log := TStringList.Create;
   Log.Add('Threads,Duration,AverageTime');
 end;
@@ -442,35 +446,17 @@ var
   SourcesRowset: ISourcesRowset;
   SourcesRecordset: _RecordSet;
   SourcesName, SourcesType: TField;
-
-  function PtCreateADOObject(const ClassID: TGUID): IUnknown;
-  var
-    Status: HResult;
-    FPUControlWord: Word;
-  begin
-      asm
-        FNSTCW FPUControlWord
-      end
-    ;
-    Status := CoCreateInstance(CLASS_Recordset, nil,
-      CLSCTX_INPROC_SERVER or CLSCTX_LOCAL_SERVER, IUnknown, Result);
-      asm
-        FNCLEX
-        FLDCW FPUControlWord
-      end
-    ;
-    OleCheck(Status);
-  end;
-
 begin
   Screen.Cursor := crHourGlass;
   ServerComboBox.Items.Clear;
-  SourcesRecordset := PtCreateADOObject(CLASS_Recordset) as _RecordSet;
+
+  OleCheck(CoCreateInstance(CLASS_Recordset, nil, CLSCTX_INPROC_SERVER or
+    CLSCTX_LOCAL_SERVER, IUnknown, SourcesRecordset));
   RSCon := SourcesRecordset as ADORecordsetConstruction;
   SourcesRowset := CreateComObject(ProgIDToClassID('SQLOLEDB Enumerator'))
     as ISourcesRowset;
-  OleCheck(SourcesRowset.GetSourcesRowset(nil, IRowset, 0, nil, IUnknown(Rowset)
-      ));
+  OleCheck(SourcesRowset.GetSourcesRowset(nil, IRowset, 0, nil,
+    IUnknown(Rowset)));
   RSCon.Rowset := Rowset;
   with TADODataSet.Create(nil) do
     try
@@ -495,7 +481,7 @@ begin
     end;
 end;
 
-procedure TMainForm.SetMaxPeriod(const Value: Integer);
+procedure TMainForm.SetMaxPeriod(const Value: integer);
 begin
   if Value = FMaxPeriod then
     exit;
@@ -504,7 +490,7 @@ begin
   MaxPeriodLabel.Caption := IntToStr(FMaxPeriod);
 end;
 
-procedure TMainForm.SetMinPeriod(const Value: Integer);
+procedure TMainForm.SetMinPeriod(const Value: integer);
 begin
   if Value = FMinPeriod then
     exit;
@@ -587,16 +573,17 @@ begin
     Avg := Avg / DataCount;
     PeriodValues.UnlockList;
 
-    Self.AvgPeriodLabel.Caption := Format('%.2f',[Avg]);
+    Self.AvgPeriodLabel.Caption := Format('%.2f', [Avg]);
     Self.TransactionsLabel.Caption := Format('%.2f', [1000 * NumThreads / Avg]);
 
-    Log.Add(NumThreadsEdit.Text + ',' + DurationEdit.Text + ',' + FloatToStr
-        (Avg));
+    Log.Add(NumThreadsEdit.Text + ',' + DurationEdit.Text + ',' +
+      FloatToStr(Avg));
     Log.SaveToFile(LogFileName);
     Application.MessageBox(PChar('Tx Avg Duration (ms) : ' + FloatToStr(Avg)),
       'Execution finished', MB_ICONINFORMATION);
-    Application.MessageBox(PChar('Avg Speed (Tx/s) : ' + FloatToStr
-          (1000 * NumThreads / Avg)), 'Execution finished', MB_ICONINFORMATION);
+    Application.MessageBox
+      (PChar('Avg Speed (Tx/s) : ' + FloatToStr(1000 * NumThreads / Avg)),
+      'Execution finished', MB_ICONINFORMATION);
     if Self.FHalted then
       Application.MessageBox(PChar(Self.FErrorMessage),
         'Terminated due to an exception.', MB_ICONHAND);
@@ -610,8 +597,8 @@ begin
     Self.FCallStop := False;
     StopButton.Click;
   end;
-  StatusBar1.Panels[0].Text := 'Tx: ' + IntToStr(ThreadCount)
-    + '/' + NumThreadsEdit.Text;
+  StatusBar1.Panels[0].Text := 'Tx: ' + IntToStr(ThreadCount) + '/' +
+    NumThreadsEdit.Text;
   if (TSQLThread(Sender).ErrorMessage <> '') and not Self.FHalted then
   begin
     Self.FErrorMessage := TSQLThread(Sender).ErrorMessage;

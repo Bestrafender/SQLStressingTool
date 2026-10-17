@@ -13,11 +13,9 @@ object MainForm: TMainForm
   Font.Name = 'Tahoma'
   Font.Style = []
   Menu = MainMenu1
-  OldCreateOrder = False
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
@@ -272,6 +270,7 @@ object MainForm: TMainForm
       BarPen.SmallDots = True
       Marks.Visible = False
       Marks.Callout.Length = 8
+      Marks.OnTop = True
       Title = 'Tx Duration (ms)'
       XValues.Name = 'X'
       XValues.Order = loAscending

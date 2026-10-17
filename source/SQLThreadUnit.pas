@@ -62,7 +62,6 @@ begin
   DBConnection.ConnectionTimeout := 60; (* 1 min *)
   DBConnection.ConnectionString := AConnectionString;
   DBConnection.LoginPrompt := False;
-  DBConnection.Open;
 
   CommandText := ACommand;
 
@@ -86,6 +85,7 @@ var
   GUID: TGUID;
 begin
   try
+    DBConnection.Open;
     DBCommand := TADOCommand.Create(nil);
     try
       DBCommand.CommandTimeout := 600; (* 10 mins *)

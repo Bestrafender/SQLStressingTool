@@ -129,8 +129,8 @@ var
   Msg: string;
 begin
   Msg := 'SQL Stressing Tool'#13#10 +
-    'All rights reserved: Eduardo Gamboa ©2008-2014'#13#10 +
-    #9'eduardo@bestrafender.com'#13#10 + #13#10'Powered by Delphi XE7 32-bit';
+    'All rights reserved: Eduardo Gamboa ©2008-2026'#13#10 +
+    #9'eduardo@bestrafender.com'#13#10 + #13#10'Powered by Delphi 13.1 Florence';
   Application.MessageBox(PChar(Msg), 'About...', MB_ICONINFORMATION);
 end;
 
